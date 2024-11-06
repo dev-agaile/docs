@@ -1,0 +1,125 @@
+# CAP-AI-SERVICE-FACTORY Overview
+
+In the fast-paced world of AI, businesses require a robust, scalable solution to stay competitive and adaptive. The **CAP-AI-SERVICE-FACTORY** provides a seamless framework for producing and managing AI services, customized to meet your organization’s needs.
+
+## Key Benefits
+
+- **Future-Proof AI Integration**: Stay ahead with a constantly updated platform that integrates the latest AI technologies.
+- **Rapid Deployment**: Deploy customized AI instances within minutes, minimizing setup time.
+- **Versatility**: Harness the power of leading Language Models (LLMs), Retrieval-Augmented Generation (RAG), and advanced agent frameworks to tackle a wide range of business challenges.
+- **Scalability**: Effortlessly scale your AI infrastructure to match business growth without extensive infrastructure changes.
+- **Cost-Effective**: Optimize expenses using AWS's pay-as-you-go model to maintain high performance affordably.
+
+---
+
+# Technical Specifications
+
+## Architecture
+
+- **Backend**: Built with Python and containerized for smooth deployment and updates.
+- **Infrastructure**: Hosted on AWS with a focus on performance and security through key AWS services.
+
+### Key Components
+
+#### Deployment
+- **Terraform Configuration**: A Terraform-based configuration enables rapid, consistent setup of new tenants.
+- **Automated Deployment**: Deployment is automatically triggered by configuration file commits, ensuring quick, reliable changes.
+
+#### Compute
+- **AWS Lambda**: Provides serverless execution for the backend.
+- **ECS Fargate**: Supports containerized workloads in private setups, enabling scalable applications.
+
+#### Networking
+- **CloudFront**: Delivers content securely with built-in DDoS protection.
+- **Lambda@Edge**: Handles request signing for enhanced security.
+- **Network Load Balancer (NLB)**: Used in private setups to support response streaming for high-throughput applications.
+
+#### Storage & Databases
+- **Aurora PostgreSQL Serverless v2**: Deployed with the `pgvector` extension for RAG functionality.
+- **DynamoDB**: Provides scalable NoSQL storage for microservices.
+- **Optional OpenSearch**: Available for advanced vector search capabilities in private deployments.
+
+#### AI Integration
+- **Multiple LLM Support**: Leverage various language models as required.
+- **Optional Amazon Bedrock Integration**: Includes support for advanced models like Claude by Anthropic.
+
+#### Security
+- **IAM Authentication**: Ensures secure access to databases and other resources.
+- **VPC and Route53 Configuration**: A well-architected VPC design with DNS management through Route53.
+- **CloudFront DDoS Protection**: CloudFront’s integrated DDoS protection adds another layer of security.
+
+---
+
+## Deployment Process
+
+### Networking Setup
+1. **VPC Creation**: A custom VPC is created using the AWS VPC module, including public and private subnets across multiple availability zones.
+2. **Internet and NAT Gateway**: An Internet Gateway provides public internet access, while a NAT Gateway in a public subnet enables private subnets to reach the internet.
+3. **Routing Configuration**: Route tables are configured to direct internal and external traffic as needed.
+
+### Security Groups
+- Multiple security groups are defined to restrict network access:
+  - Lambda Security Group
+  - Aurora Database Security Group
+  - Bastion Host Security Group
+
+### Database
+- **Aurora PostgreSQL Serverless v2**: The primary database cluster is hosted in private subnets.
+- **Subnet Grouping**: A database subnet group is configured for the Aurora cluster.
+- **IAM Authentication**: Ensures secure access to the database through IAM roles.
+
+### S3 Buckets
+- Multiple S3 buckets are created for storage needs, including frontend hosting and data storage.
+
+### DynamoDB Tables
+- Various tables are established to support different microservices, including:
+  - Chat history
+  - Prompt templates
+  - Assistant configurations
+
+### Lambda Functions
+- **Deployment of Lambda Functions**: Multiple functions are deployed to support microservices (e.g., `agaile-aia-zoho-demo`, `agaile-aia-zohlarinc-new`).
+- **IAM Roles**: Roles and policies are defined for each Lambda function, with URLs set up for API access.
+
+### CloudFront Distributions
+- **Content Delivery**: CloudFront distributions manage content delivery and API routing.
+- **Origin Access Controls**: Controls are configured for secure access to S3.
+- **Lambda@Edge Functions**: Used to handle request signing and API key validation.
+
+### Route53 DNS
+- **DNS Records**: Managed by Route53 for seamless integration with CloudFront.
+
+### Secrets Management
+- **AWS Secrets Manager**: Secures sensitive information for all components.
+  
+### KMS (Key Management Service)
+- A dedicated KMS key is created for encryption and data security.
+
+### IAM Roles and Policies
+- IAM roles and policies are assigned to various services, including:
+  - Scraper role
+  - Database access roles
+
+### EC2 Instances
+- A **bastion host** is deployed in a public subnet, enabling secure access to private subnet resources.
+
+### EventBridge Scheduler
+- **Scheduled Tasks**: EventBridge schedules run periodic tasks, like health checks for microservices.
+
+### CloudFront Functions
+- **API Key Validation**: A CloudFront function is deployed specifically for validating API keys.
+
+This multi-tenant architecture leverages microservices, serverless components, and AWS-native solutions, creating a secure, scalable, and modular system.
+
+---
+
+## Customization & Management
+
+- **RAG and Workflow Configuration**: Configure RAG parameters, prompts, and agent workflows post-deployment.
+- **Continuous Updates**: Easily update with container swapping, ensuring the platform always benefits from the latest AI advancements.
+
+---
+
+# Conclusion
+
+With the **CAP-AI-SERVICE-FACTORY**, businesses can harness the power of advanced AI capabilities through an effortlessly managed, scalable platform. Its robust infrastructure and deployment processes provide an unparalleled blend of agility, security, and efficiency, positioning your business at the forefront of AI innovation.

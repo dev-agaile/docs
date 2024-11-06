@@ -2,8 +2,8 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Agaile Core AI Platform",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "/logo/dark.png",
+    "light": "/logo/light.png"
   },
   "favicon": "/favicon.svg",
   "colors": {
@@ -67,19 +67,16 @@
     {
       "group": "Usecases",
       "pages": [
-        "usecases/creating-zoho-assistant",
-        "usecases/creating-jira-assistant",
-        "usecases/creating-github-assistant",
-        "usecases/custom-dashboard",
-        "usecases/executive-dashboard",
-        "usecases/manager-dashboard",
-        "usecases/developer-dashboard"
+        "usecases/Zoho-Helpdesk",
+        "usecases/JIRA-Task-Assistant",
+        "usecases/Github-PR-Assistant",
+        "usecases/Custom-Dashboard"
       ]
     },
     {
       "group": "How-to Guides",
       "pages": [
-        "guides/creating-new-assistant",
+        "guides/creating-a-new-assistant",
         "guides/adding-integrations"
       ]
     },
@@ -95,17 +92,26 @@
     {
       "group": "Concepts",
       "pages": [
-        "concepts/orchestrators",
-        "concepts/default-orchestrator",
-        "concepts/assistants",
-        "concepts/default-assistant",
-        "concepts/tool-assistant",
-        "concepts/bedrock-guardrails",
-        "concepts/plugins-and-tools",
-        "concepts/llms",
-        "concepts/bedrock-llm",
-        "concepts/openai-llm",
-        "concepts/anthropic-llm",
+        {
+          "group": "Orchestrators",
+          "pages": [
+            "concepts/orchestrators/default"
+          ]
+        },
+        {
+          "group": "Assistants",
+          "pages": [
+            "concepts/assistants/default-assistant",
+            "concepts/assistants/tool-assistant",
+            "concepts/assistants/default-bedrock-guardrails"
+          ]
+        },
+        {
+          "group": "LLMs",
+          "pages": [
+            "concepts/llms/openai"
+          ]
+        },
         "concepts/retrievers"
       ]
     },
@@ -118,8 +124,9 @@
       ]
     },
     {
-      "group": "Architecture: AWS",
+      "group": "Architecture",
       "pages": [
+        "architecture/overview",
         "architecture/vector-db",
         "architecture/assistant-configurations",
         "architecture/server",
