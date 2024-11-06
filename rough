@@ -1,0 +1,52 @@
+Agaile Core AI Platform
+- Overview
+- Getting Started
+
+Getting Started
+- Easy first deployment using Terraform
+- Creating a new Assistant
+- Deploying Changes using Terraform
+
+Usecases
+- Creating a Zoho Desk Assistant using CAP
+- Creating a JIRA Assistant using CAP
+- Creating a Github Assistant using CAP
+- (Advanced) Creating a custom dashboard using CAP and ConvertAI
+    - For executives
+    - For managers
+    - For developers
+
+How-to Guides
+- Creating a new assistant
+- Adding integrations with platforms
+
+Integrations
+- Zoho
+- JIRA
+- GitHub
+- Custom Ingestion Pipelines
+
+Concepts
+- Orchestrators
+    - Default
+- Assistants
+    - Default Assistant
+    - Tool Assistant
+    - Default with Bedrock Guardrails
+- Plugins and Tools
+- LLMs
+    - Bedrock
+    - OpenAI
+    - Anthropic
+- Retrievers
+
+Codebase
+- Overview
+- Observability
+- Testing
+
+Architecture: AWS
+- Vector DB: RDS Aurora Postgres
+- Assistant Configurations: DynamoDB
+- Server: AWS Lambda
+- Observability and Testing: AWS Glue and Athena

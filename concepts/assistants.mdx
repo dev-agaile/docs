@@ -1,0 +1,72 @@
+# Assistants
+
+Assistants are the core components responsible for processing user queries. Each assistant utilizes Language Models (LLMs), manages conversation history, applies security checks, and integrates with external services. Below is a breakdown of the key assistants, their purposes, features, and workflows.
+
+---
+
+## 1. BedrockGuardrailsAssistant
+
+### Purpose
+The **BedrockGuardrailsAssistant** applies AWS Bedrock Guardrails to user queries, ensuring they comply with predefined security and content policies.
+
+### Key Features
+- **Initialization**: Configures the AWS Bedrock client with specific parameters like region, guardrail ID, and version.
+- **Guardrail Enforcement**: Validates user queries against guardrails. If a query violates a guardrail, it returns a blocked response.
+- **Logging**: Records whether a query passed or was blocked by the guardrails.
+
+### Workflow
+1. **Initialization**:
+   - Sets up the AWS Bedrock client and loads guardrail configurations.
+2. **Streaming**:
+   - Processes the query through Bedrock Guardrails.
+     - If passed, logs success and continues with processing.
+     - If blocked, logs the violation and returns a default blocked message.
+
+---
+
+## 2. DefaultAssistant
+
+### Purpose
+The **DefaultAssistant** handles standard user queries using an LLM, managing token usage, embeddings, and conversation history for context-aware responses.
+
+### Key Features
+- **Token Management**: Manages token usage for queries, responses, templates, embeddings, and conversation history within model limits.
+- **Embeddings and History Retrieval**: Retrieves relevant embeddings and past conversation history for improved context.
+- **Prompt Construction**: Builds prompts using predefined templates and chat history.
+- **Streaming Responses**: Streams responses from the LLM while tracking performance metrics.
+
+### Workflow
+1. **Initialization**:
+   - Configures token limits, retrieves the LLM and embeddings provider.
+   - Validates the prompt template to ensure token constraints are met.
+   - Prepares the prompt with system messages and placeholders.
+2. **Streaming**:
+   - Calculates token usage for both static and dynamic elements.
+   - Retrieves embeddings and relevant conversation history.
+   - Constructs inputs for the LLM and streams the response in real-time.
+
+---
+
+## 3. ToolAssistant
+
+### Purpose
+The **ToolAssistant** enhances the chatbot's capabilities by integrating with various tools, enabling it to execute specialized tasks, such as interacting with repositories, JIRA, SQL databases, and more.
+
+### Key Features
+- **Tool Integration**: Incorporates both sensitive and non-sensitive tools from the ToolRepository for extended functionality.
+- **History Transformation**: Converts conversation history into a format compatible with the LangGraph agent.
+- **Agent Creation**: Uses LangGraph’s `create_react_agent` to handle tool-based interactions.
+- **Streaming Responses**: Manages and streams responses from the agent, handling different message types efficiently.
+
+### Workflow
+1. **Initialization**:
+   - Configures token limits and retrieves the appropriate LLM and encoder.
+   - Loads tools from the ToolRepository and validates the template.
+2. **Streaming**:
+   - Constructs and transforms conversation history into the required format.
+   - Creates a LangGraph agent equipped with the tools.
+   - Streams and processes messages from the agent, delivering responses in chunks.
+
+---
+
+Each assistant has a unique function within the system, providing robust solutions for secure query processing, context-rich responses, and tool-based interactions. These capabilities allow for flexible, intelligent conversations tailored to diverse user needs and security standards.

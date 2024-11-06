@@ -1,0 +1,138 @@
+# Setup a new Tenant
+
+Follow these steps to set up a new tenant in the Agaile system:
+
+---
+
+### 1. Select New Tenant Name
+
+Choose a name for the new tenant.
+
+### 2. Create a New Branch
+
+- **Base it on**: [Agaile Tenant Deployments GitHub Repository](https://github.com/Agaile-com/agaile-tenant-deployments/tree/main)
+- **Branch Naming Convention**: `tenant/<new tenant name>`
+
+### 3. Update Shared Configurations
+
+- **Edit the File**: [agaile_shared_configs.tf](https://github.com/Agaile-com/agaile-tenant-deployments/blob/main/dev/agaile_shared_configs.tf)
+- **Add New Tenant**: Include the new tenant configuration in this file.
+
+### 4. Create New Tenant Configuration
+
+- **Copy Template**: [agaile_tenant_zohlarinc.tf](https://github.com/Agaile-com/agaile-tenant-deployments/blob/main/dev/agaile_tenant_zohlarinc.tf)
+- **Rename File**: Replace `new_tenant` with the actual tenant name, resulting in `<tenant_name>.tf`.
+
+### 5. Update Variables
+
+Use AI to adjust variable names and values.
+
+**Example**:
+```terraform
+locals {
+  agaile_aia_zohlarinc_prefix = "agaile-aia-zohlarinc-new"
+}
+```
+becomes:
+```terraform
+locals {
+  agaile_aia_<new_tenant>_prefix = "agaile-aia-<new_tenant>"
+}
+```
+
+### 6. Push Changes to Remote
+
+Commit and push your changes to remote with the branch name: `tenant/<new tenant name>`.
+
+### 7. Create a Pull Request (PR)
+
+- **PR to Main**: This will trigger a pipeline, creating a Terraform plan, which will be added as a comment in the PR.
+- **Review and Validate**: Review the Terraform plan and ensure the changes are as expected.
+
+### 8. Merge Changes
+
+- **Merge Branch**: Merge `tenant/<new tenant name>` branch into `main`.
+- **Trigger Deployment**: This will initiate a Terraform `plan` and `apply` job in GitHub Actions.
+
+### 9. Wait for Deployment
+
+Allow GitHub Actions to trigger Terraform to automatically deploy all changes.
+
+### 10. Add Additional Configurations
+
+Once deployment is complete, add standard records to DynamoDB tables:
+- `tenant-assistant-configs`
+- `tenant-prompt-template`
+
+Use this [DynamoDB Transfer Script](https://github.com/Agaile-com/agaile-tenant-deployments/blob/f192dadd5cd1c92664f5eca15dff295dc1e35cc2/scripts/dynamodb-transfer.py#L1) and customize it for the new tenant.
+
+### 11. Update Backend Secrets
+
+Run the [Secrets Transfer Script](https://github.com/Agaile-com/ingestion-projects/blob/main/10_tools/secrets-transfer.py) and manually adjust the following:
+- `CAT_AIA_X_API_KEY`
+- `CAT_AIA_SERVER_BASE_URL`
+- `postgres_db_username`
+- All `ASSISTANT_ZOHO` parameters after Zoho is configured.
+
+Source for x-api keys: [AWS CloudFront API Key Validation](https://us-east-1.console.aws.amazon.com/cloudfront/v3/home#/functions/agaile-shared-validate-api-key-10457969)
+
+### 12. Create Vector Database (If RAG Is Required)
+
+Refer to the [Vector DB Guide](https://agaile.atlassian.net/wiki/spaces/SD/pages/68026373) and use [Ingestion Scripts](https://github.com/Agaile-com/ingestion-projects) for continuous ingestion.
+
+### 13. Test with Postman
+
+Update `x-api-key` and `URL` with `CAT_AIA_X_API_KEY` and `CAT_AIA_SERVER_BASE_URL`. Missing these may result in a `"forbidden"` error.
+
+#### Error Troubleshooting
+If you encounter:
+```json
+{
+  "error": "Unknown backend error",
+  "message": "Error in assistant 'default': missing assistant config",
+  "type": "AssistantError"
+}
+```
+This indicates missing tables in DynamoDB. Refer to step 10.
+
+### 14. Attach Policies to Tenant User Role
+
+For the tenant's main Lambda role (e.g., `agaile-aia-<new_tenant>-lambda-main-role`), attach required IAM policies, including:
+- **Database Connection**: Copy the `connect-to-db` inline policy from another instance.
+
+---
+
+## Sidebar: Why Lambda@Edge Is Important
+
+**Lambda@Edge** provides enhanced security for complex tasks by offering:
+- **Advanced Security**: Supports detailed security checks beyond CloudFront Functions.
+- **AWS WAF Integration**: For additional threat detection.
+- **Edge Performance**: Runs at AWS edge locations, minimizing latency.
+  
+### Lambda@Edge Deployment Steps
+- **IAM Roles and Permissions**: Refer to [AWS Lambda@Edge Permissions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-permissions.html).
+- **Deploy a Trigger**: Deploy using an existing CloudFront trigger on this function.
+- **Confirm Changes**: Select “Confirm deploy to Lambda@Edge” when adding triggers.
+
+---
+
+## Troubleshooting Commands
+
+### Verify AWS Secrets
+```bash
+aws secretsmanager get-secret-value --secret-id agaile-aia-<new_tenant>-backend-secrets
+aws secretsmanager get-secret-value --secret-id agaile-aia-zoho-demo-backend-secrets
+```
+Verify database credentials in these secrets.
+
+### Add Missing IAM Policies
+```bash
+aws iam attach-role-policy --role-name agaile-aia-<new_tenant>-lambda-main-role --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+aws iam attach-role-policy --role-name agaile-aia-<new_tenant>-lambda-main-role --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+```
+
+### Check RDS Security Group
+```bash
+aws rds describe-db-instances --db-instance-identifier agaile-shared --query 'DBInstances[0].VpcSecurityGroups'
+```
+Ensure inbound access from `sg-0fc57256cae9e0c0d` is allowed.
